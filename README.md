@@ -4,10 +4,13 @@ This package contains the complete Pashuगृह website and a working Netlify 
 
 ## Included
 
-- Responsive Hindi-first cattle catalogue and automatic three-image slideshow
+- Responsive Hindi-first cattle catalogue grouped by breed, with dynamic listing cards
+- Mixed photo/video cattle carousels with autoplay, arrows, dots and touch gestures
 - Breed-specific WhatsApp enquiries to `9942936647`
 - PostgreSQL-backed editable website content using Netlify Database
-- Durable logo, hero and breed-image uploads using Netlify Blobs
+- Durable logo, hero, cattle photo and cattle video uploads using Netlify Blobs
+- Admin controls for breeds, listings, availability, public prices and media ordering
+- Private-by-default supplement drafts with validation before public activation
 - Invite-only Admin login using Netlify Identity
 - Server-side `admin` role checks on every content update and image upload
 - Password recovery, invitation acceptance and secure sign-out
@@ -24,7 +27,9 @@ Do not use Netlify's static drag-and-drop deploy. The Admin and database require
 6. Invite the owner's email address. After the account appears in Identity, assign it the role `admin`.
 7. Open the invitation email, create the password, and visit `/admin`.
 
-The first public request seeds the database with the existing Pashuगृह content. Images uploaded from Admin are stored in the site-wide `pashugrih-media` Blob store.
+The first public request seeds the database with the current Pashuगृह content. The versioned migration preserves existing Admin edits and adds the supplied Holstein Friesian 1 gallery only when its older gallery is empty. Admin uploads are stored in the site-wide `pashugrih-media` Blob store.
+
+The bundled Holstein Friesian 1 gallery contains six optimized WebP photographs and one browser-compatible H.264 MP4 video. Original HEIC/MOV files are not needed at runtime.
 
 ## Local development
 

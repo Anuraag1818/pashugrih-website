@@ -11,7 +11,11 @@
 - [ ] Accept the invitation and create a password
 - [ ] Sign in at `/admin`
 - [ ] Save a text change and refresh the public page
-- [ ] Upload a test image and confirm it remains after a refresh
+- [ ] Confirm Holstein Friesian 1 shows six photos and one video
+- [ ] Upload a test image and MP4/WebM video and confirm both remain after a refresh
+- [ ] Reorder and remove test media, save, then refresh to verify persistence
 - [ ] Test availability toggles and every WhatsApp button
+- [ ] Confirm supplement drafts stay private until the section is explicitly enabled
+- [ ] Verify desktop, tablet and mobile layouts after the deploy
 
 If a signed-in account sees “Admin role required,” assign `admin` in Netlify Identity and sign out/in so the refreshed token includes the role.

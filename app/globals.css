@@ -225,6 +225,123 @@ a { color: inherit; text-decoration: none; }
 .auth-link-button { margin-top: 18px; padding: 0; border: 0; color: var(--forest-700); background: transparent; cursor: pointer; text-decoration: underline; }
 .auth-secondary-link { display: block; margin-top: 17px; color: #667168; font-size: 12px; text-decoration: underline; }
 
+/* Breed-wise cattle catalogue */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible { outline: 3px solid #f2b84d; outline-offset: 3px; }
+.whatsapp-button svg { width: 23px; height: 23px; flex: 0 0 auto; }
+.breed-sections { max-width: 1240px; margin: 0 auto; display: grid; gap: 76px; }
+.breed-group { min-width: 0; }
+.breed-group-heading { margin-bottom: 25px; padding-bottom: 16px; border-bottom: 1px solid rgba(36,103,70,.2); }
+.breed-group-heading h3 { margin: 0; color: var(--forest-900); font: 700 clamp(31px, 4vw, 45px)/1.15 "Nirmala UI", Georgia, serif; }
+.breed-group-heading p { margin: 5px 0 0; color: var(--rust); font: 700 15px/1.3 Georgia, serif; letter-spacing: .4px; }
+.cattle-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.cattle-card { min-width: 0; overflow: hidden; display: flex; flex-direction: column; background: var(--cream-50); border: 1px solid rgba(39,74,52,.11); border-radius: 20px; box-shadow: var(--shadow); transition: transform .24s ease, box-shadow .24s ease; }
+.cattle-card:hover { transform: translateY(-4px); box-shadow: 0 23px 54px rgba(21,48,33,.17); }
+.cattle-media-area { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #dce4d9; }
+.cattle-placeholder { width: 100%; height: 100%; padding: 34px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: radial-gradient(circle at 50% 30%, #f9f3e5, #dce6d9); }
+.cattle-placeholder img { width: 75px; height: 75px; margin-bottom: 15px; object-fit: contain; border-radius: 50%; opacity: .18; filter: grayscale(1); }
+.cattle-placeholder strong { max-width: 240px; color: var(--forest-900); font-size: 15px; line-height: 1.45; }
+.cattle-placeholder span { max-width: 245px; margin-top: 8px; color: #758076; font-size: 11px; line-height: 1.45; }
+.cattle-carousel { position: relative; width: 100%; height: 100%; overflow: hidden; background: #192a21; }
+.cattle-media-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity .42s ease; }
+.cattle-media-slide.active { opacity: 1; pointer-events: auto; }
+.cattle-media-slide img, .cattle-media-slide video { width: 100%; height: 100%; display: block; object-fit: cover; }
+.cattle-media-arrow { position: absolute; z-index: 3; top: 50%; width: 36px; height: 36px; border: 1px solid rgba(255,255,255,.55); border-radius: 50%; transform: translateY(-50%); color: white; background: rgba(9,30,18,.52); cursor: pointer; font-size: 21px; }
+.cattle-media-arrow.prev { left: 10px; }
+.cattle-media-arrow.next { right: 10px; }
+.cattle-media-dots { position: absolute; z-index: 3; left: 50%; bottom: 12px; display: flex; gap: 6px; transform: translateX(-50%); }
+.cattle-media-dots button { width: 9px; height: 9px; padding: 0; border: 1px solid white; border-radius: 50%; background: rgba(0,0,0,.3); cursor: pointer; }
+.cattle-media-dots button.active { background: white; }
+.cattle-card-body { flex: 1; padding: 23px 22px 24px; display: flex; flex-direction: column; }
+.cattle-title h4 { margin: 0; color: var(--forest-900); font: 700 25px/1.2 "Nirmala UI", Georgia, serif; }
+.cattle-title p { margin: 5px 0 0; color: var(--rust); font: 700 13px/1.3 Georgia, serif; }
+.cattle-description { margin: 15px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.cattle-facts { margin: 18px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid #e7dcc5; border-radius: 12px; overflow: hidden; background: #fbf5e7; }
+.cattle-facts div { min-width: 0; padding: 11px 12px; border-bottom: 1px solid #e7dcc5; }
+.cattle-facts div:nth-child(odd) { border-right: 1px solid #e7dcc5; }
+.cattle-facts div:nth-last-child(-n+2) { border-bottom: 0; }
+.cattle-facts dt { color: #887c69; font-size: 9px; font-weight: 850; letter-spacing: .7px; }
+.cattle-facts dd { margin: 5px 0 0; color: var(--ink); font-size: 13px; font-weight: 750; overflow-wrap: anywhere; }
+.cattle-price { margin: 17px 0 0; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-radius: 11px; background: #f0dfb8; color: var(--forest-900); }
+.cattle-price span { font-size: 11px; font-weight: 800; }
+.cattle-price strong { color: var(--rust); font-size: 18px; }
+.cattle-card .whatsapp-button, .cattle-card .unavailable-message { width: 100%; margin-top: auto; transform: translateY(15px); border-radius: 11px; }
+.cattle-card .whatsapp-button:hover { transform: translateY(13px); }
+.unavailable-message { min-height: 50px; display: grid; place-items: center; padding: 0 16px; border-radius: 11px; background: #e2dccf; color: #665f54; font-size: 13px; font-weight: 850; }
+.unavailable-card { box-shadow: 0 15px 38px rgba(21,48,33,.09); }
+
+.supplements-section { padding: 94px 24px 108px; background: #f5ecd8; }
+.supplement-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.supplement-card { overflow: hidden; display: grid; grid-template-columns: 42% 1fr; background: white; border: 1px solid rgba(39,74,52,.12); border-radius: 20px; box-shadow: var(--shadow); }
+.supplement-card > img { width: 100%; height: 100%; min-height: 360px; object-fit: cover; background: #e4e8df; }
+.supplement-body { padding: 26px; }
+.supplement-category { color: var(--rust); font-size: 10px; font-weight: 850; letter-spacing: 1px; text-transform: uppercase; }
+.supplement-body h3 { margin: 8px 0 10px; color: var(--forest-900); font: 700 26px Georgia, serif; }
+.supplement-body p { color: var(--muted); font-size: 13px; line-height: 1.58; }
+.supplement-body dl { margin: 18px 0; }
+.supplement-body dl div { padding: 8px 0; display: grid; grid-template-columns: 110px 1fr; gap: 12px; border-top: 1px solid #ece5d5; }
+.supplement-body dt { color: #847965; font-size: 10px; font-weight: 800; }
+.supplement-body dd { margin: 0; font-size: 12px; font-weight: 700; }
+.footer-inner { max-width: 1200px; }
+.footer-contact { display: grid; gap: 5px; color: white; font-style: normal; font-size: 12px; }
+.footer-contact a { color: #efbd5d; font-size: 17px; font-weight: 850; }
+.footer-contact span { color: rgba(255,255,255,.52); }
+.floating-whatsapp { position: fixed; z-index: 50; right: max(22px, env(safe-area-inset-right)); bottom: max(22px, env(safe-area-inset-bottom)); width: 62px; height: 62px; display: grid; place-items: center; border: 2px solid rgba(255,255,255,.88); border-radius: 50%; color: white; background: #25d366; box-shadow: 0 13px 32px rgba(4,55,27,.3); transition: transform .22s ease, box-shadow .22s ease, filter .22s ease; }
+.floating-whatsapp svg { width: 34px; height: 34px; }
+.floating-whatsapp:hover { transform: translateY(-4px) scale(1.04); filter: brightness(1.04); box-shadow: 0 17px 38px rgba(4,55,27,.4); }
+
+/* Dynamic Admin inventory and supplements */
+.admin-title-line, .panel-title-actions, .breed-editor-head, .listing-editor-head, .media-admin-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.unsaved-badge { padding: 6px 10px; border-radius: 999px; color: #714b05; background: #ffe9b4; font-size: 10px; font-weight: 850; letter-spacing: .5px; }
+.admin-add-button { min-height: 40px; padding: 0 15px; border: 1px solid var(--forest-700); border-radius: 9px; color: var(--forest-700); background: white; font-size: 12px; font-weight: 850; cursor: pointer; }
+.admin-add-button.full { width: 100%; margin-top: 18px; }
+.inventory-panel { min-width: 0; }
+.breed-admin-group { margin-top: 25px; padding: 21px; border: 1px solid #dfe6dd; border-radius: 14px; background: #f7f9f5; }
+.breed-admin-group:first-of-type { margin-top: 18px; }
+.breed-editor-head > div { display: grid; }
+.breed-editor-head > div strong { font: 700 20px Georgia, serif; }
+.breed-editor-head > div span { margin-top: 3px; color: #798178; font-size: 11px; }
+.danger-link { border: 0; padding: 0; color: #a13a2c; background: transparent; font-size: 11px; font-weight: 800; cursor: pointer; text-decoration: underline; }
+.listing-stack { display: grid; gap: 18px; margin-top: 18px; }
+.listing-editor { padding: 18px; border: 1px solid #dce2da; border-radius: 12px; background: white; }
+.listing-editor-head { align-items: flex-start; }
+.listing-editor-head h3 { margin: 0; font: 700 19px Georgia, serif; }
+.listing-editor-head span { display: block; margin-top: 3px; color: #788078; font-size: 11px; }
+.listing-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.form-row.three { grid-template-columns: .55fr 1.2fr 1fr; }
+.form-field select { width: 100%; border: 1px solid #ccd5cc; border-radius: 9px; padding: 11px 12px; color: #18251e; background: #fbfcfa; }
+.status-field strong { min-height: 43px; display: flex; align-items: center; color: var(--forest-700); font-size: 12px; }
+.checkbox-field { align-content: end; }
+.checkbox-control { min-height: 43px; display: flex !important; align-items: center; gap: 9px; padding: 0 12px; border: 1px solid #ccd5cc; border-radius: 9px; background: #fbfcfa; text-transform: none !important; letter-spacing: 0 !important; }
+.checkbox-control input { width: 17px; height: 17px; }
+.media-admin { margin-top: 18px; padding-top: 17px; border-top: 1px solid #e3e7e1; }
+.media-admin-head > div { display: grid; }
+.media-admin-head span { color: #7b837b; font-size: 10px; }
+.file-button { position: relative; overflow: hidden; padding: 9px 12px; border-radius: 8px; color: white; background: var(--forest-700); font-size: 11px; font-weight: 800; cursor: pointer; }
+.file-button input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.media-admin-grid { margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.media-admin-item { min-width: 0; padding: 9px; border: 1px solid #dfe5dd; border-radius: 10px; background: #fafbf9; }
+.media-admin-item > img, .media-admin-item > video { width: 100%; aspect-ratio: 4/3; display: block; object-fit: cover; border-radius: 7px; background: #1a241d; }
+.media-admin-item .form-field { margin-top: 9px; }
+.media-item-actions { display: flex; gap: 7px; margin-top: 9px; }
+.media-item-actions button:not(.danger-link) { width: 31px; height: 28px; border: 1px solid #cbd4ca; border-radius: 6px; background: white; cursor: pointer; }
+.empty-media-admin { margin-top: 13px; padding: 14px; border: 1px dashed #c7d0c5; border-radius: 9px; color: #798079; background: #fafbf9; font-size: 11px; text-align: center; }
+.upload-preview.empty { display: grid; place-items: center; color: #7b837b; font-size: 10px; text-align: center; }
+.supplements-admin { margin-top: 24px; }
+.supplement-visibility { max-width: 280px; min-height: 46px; padding: 0 16px; border: 0; border-radius: 9px; color: white; background: var(--forest-700); font-weight: 850; cursor: pointer; }
+.supplement-visibility.enabled { background: var(--rust); }
+.supplement-state { margin: 18px 0; padding: 12px 14px; border-radius: 9px; font-size: 12px; font-weight: 750; }
+.supplement-state.private { color: #5a554b; background: #eee9dc; }
+.supplement-state.public { color: #185730; background: #dbedde; }
+.validation-note { margin: 0 0 18px; padding: 11px 13px; border-left: 4px solid #d69526; color: #704f17; background: #fff1cf; font-size: 11px; line-height: 1.5; }
+.supplement-admin-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.supplement-editor { min-width: 0; padding: 19px; border: 1px solid #dfe5dd; border-radius: 13px; background: #fafbf9; }
+.supplement-editor h3 { margin: 0; font: 700 20px Georgia, serif; }
+.supplement-preview { height: 180px; margin-top: 15px; overflow: hidden; border-radius: 10px; background: #e6ebe3; }
+.supplement-preview > img { width: 100%; height: 100%; object-fit: cover; }
+.supplement-preview > div { height: 100%; display: grid; place-items: center; align-content: center; gap: 8px; color: #747d74; font-size: 10px; }
+.supplement-preview > div img { width: 58px; height: 58px; object-fit: contain; border-radius: 50%; opacity: .28; filter: grayscale(1); }
+.danger-button { width: 100%; min-height: 40px; margin-top: 16px; border: 1px solid #bd5b4d; border-radius: 8px; color: #9b3528; background: white; font-weight: 800; cursor: pointer; }
+
 @media (max-width: 800px) {
   .site-header { height: 72px; padding: 0 18px; }
   .brand-logo { width: 46px; height: 46px; }
@@ -259,6 +376,34 @@ a { color: inherit; text-decoration: none; }
   .save-button { width: 100%; }
   .admin-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1050px) {
+  .cattle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .supplement-card { grid-template-columns: 1fr; }
+  .supplement-card > img { min-height: 240px; max-height: 320px; }
+  .supplement-admin-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 800px) {
+  .breeds-section { padding: 76px 17px 90px; }
+  .breed-sections { gap: 58px; }
+  .cattle-grid, .supplement-grid { grid-template-columns: 1fr; }
+  .cattle-card:hover { transform: none; }
+  .cattle-facts { grid-template-columns: 1fr; }
+  .cattle-facts div, .cattle-facts div:nth-child(odd), .cattle-facts div:nth-last-child(-n+2) { border-right: 0; border-bottom: 1px solid #e7dcc5; }
+  .cattle-facts div:last-child { border-bottom: 0; }
+  .supplements-section { padding: 76px 17px 90px; }
+  .floating-whatsapp { right: max(15px, env(safe-area-inset-right)); bottom: max(15px, env(safe-area-inset-bottom)); width: 56px; height: 56px; }
+  .floating-whatsapp svg { width: 31px; height: 31px; }
+  .footer-contact { order: 2; }
+  .footer-copy { order: 3; }
+  .panel-title-actions, .listing-editor-head, .media-admin-head { align-items: flex-start; flex-direction: column; }
+  .panel-title-actions > button, .supplement-visibility { width: 100%; max-width: none; }
+  .listing-actions { width: 100%; justify-content: flex-start; }
+  .form-row.three { grid-template-columns: 1fr; }
+  .media-admin-grid { grid-template-columns: 1fr; }
+  .breed-admin-group, .listing-editor, .supplement-editor { padding: 15px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

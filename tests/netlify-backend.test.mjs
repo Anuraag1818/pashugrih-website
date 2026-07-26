@@ -19,9 +19,25 @@ test("uses Netlify Database, Blobs and role-protected writes", async () => {
   assert.match(contentRoute, /assertSameOrigin/);
   assert.match(uploadRoute, /getStore/);
   assert.match(uploadRoute, /8 \* 1024 \* 1024/);
+  assert.match(uploadRoute, /40 \* 1024 \* 1024/);
+  assert.match(uploadRoute, /video\/mp4/);
   assert.match(mediaRoute, /pashugrih-media/);
+  assert.match(mediaRoute, /content-range/);
   assert.match(auth, /roles\?\.includes\("admin"\)/);
   assert.match(config, /pnpm run build/);
+});
+
+test("Admin supports dynamic inventory, media ordering and private supplements", async () => {
+  const editor = await readFile(new URL("app/admin/AdminEditor.tsx", root), "utf8");
+  assert.match(editor, /\+ Add cattle box/);
+  assert.match(editor, /\+ Add breed section/);
+  assert.match(editor, /Show price publicly/);
+  assert.match(editor, /Upload media/);
+  assert.match(editor, /Move media earlier/);
+  assert.match(editor, /\+ Add supplement/);
+  assert.match(editor, /Show supplement section on website/);
+  assert.match(editor, /beforeunload/);
+  assert.match(editor, /activeUploads/);
 });
 
 test("ships a PostgreSQL migration and invite-capable Admin login", async () => {
