@@ -5,8 +5,9 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 
 test("uses Netlify Database, Blobs and role-protected writes", async () => {
-  const [content, contentRoute, uploadRoute, mediaRoute, auth, config] = await Promise.all([
+  const [content, contentCache, contentRoute, uploadRoute, mediaRoute, auth, config] = await Promise.all([
     readFile(new URL("lib/content.ts", root), "utf8"),
+    readFile(new URL("lib/content-cache.ts", root), "utf8"),
     readFile(new URL("app/api/content/route.ts", root), "utf8"),
     readFile(new URL("app/api/upload/route.ts", root), "utf8"),
     readFile(new URL("app/api/media/[...key]/route.ts", root), "utf8"),
@@ -15,6 +16,14 @@ test("uses Netlify Database, Blobs and role-protected writes", async () => {
   ]);
   assert.match(content, /drizzle-orm/);
   assert.match(content, /NETLIFY_DB_URL/);
+  assert.match(content, /unstable_cache/);
+  assert.match(content, /getFreshSiteContent/);
+  assert.match(content, /revalidateTag\(tag, \{ expire: 0 \}\)/);
+  assert.match(content, /revalidatePath\("\/"\)/);
+  assert.match(contentCache, /SITE_CONTENT_CACHE_TAG = "site-content"/);
+  assert.match(contentCache, /60 \* 60/);
+  const readOnlyBlock = content.slice(content.indexOf("async function readSiteContentFromDatabase"), content.indexOf("const readCachedSiteContent"));
+  assert.doesNotMatch(readOnlyBlock, /\.insert\(|\.update\(|\.delete\(/);
   assert.match(contentRoute, /getAdminUser/);
   assert.match(contentRoute, /assertSameOrigin/);
   assert.match(uploadRoute, /getStore/);
@@ -47,6 +56,7 @@ test("ships a PostgreSQL migration and invite-capable Admin login", async () => 
     readFile(new URL("app/AuthCallback.tsx", root), "utf8"),
   ]);
   assert.match(migration, /CREATE TABLE "site_content"/);
+  assert.doesNotMatch(migration, /DROP\s+TABLE|TRUNCATE|DELETE\s+FROM/i);
   assert.match(login, /requestPasswordRecovery/);
   assert.match(callback, /accept-invite/);
 });
