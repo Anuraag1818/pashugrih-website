@@ -26,6 +26,8 @@ test("ships the breed-wise catalogue, exact inventory and contact controls", asy
   assert.match(carousel, /muted loop playsInline/);
   assert.match(carousel, /video\.pause\(\)/);
   assert.match(carousel, /onTouchStart/);
+  assert.doesNotMatch(site, /fetch\(/);
+  assert.doesNotMatch(carousel, /fetch\(/);
   assert.match(site, /अभी उपलब्ध नहीं/);
   assert.match(site, /initialContent\.supplementsEnabled/);
 });
