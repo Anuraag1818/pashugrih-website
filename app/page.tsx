@@ -1,7 +1,7 @@
 import { PashugrihSite } from "./components/PashugrihSite";
 import { getSiteContent } from "../lib/content";
 
-export const dynamic = "force-dynamic";
+export const revalidate = false;
 
 export default async function Home() {
   const content = await getSiteContent();
