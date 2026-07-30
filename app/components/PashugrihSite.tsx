@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa6";
 import type { CattleListing, SiteContent, Supplement } from "../../lib/content";
 import { isSupplementPublicReady } from "../../lib/content-model";
+import { optimizedImageUrl, responsiveImageSrcSet } from "../../lib/media-url";
 import { CattleMediaCarousel } from "./CattleMediaCarousel";
 
 export function PashugrihSite({ initialContent }: { initialContent: SiteContent }) {
@@ -49,7 +50,16 @@ export function PashugrihSite({ initialContent }: { initialContent: SiteContent 
       touchStart.current = null;
     }}>
       {initialContent.slides.map((slide, index) => <div className={`hero-slide ${index === active ? "active" : ""}`} key={slide} aria-hidden={index !== active}>
-        <img className="hero-image" src={slide} alt={`Pashuगृह पशु फोटो ${index + 1}`} />
+        <img
+          className="hero-image"
+          src={optimizedImageUrl(slide, { width: 1600, quality: 70 })}
+          srcSet={responsiveImageSrcSet(slide, [640, 960, 1280, 1600], 70)}
+          sizes="100vw"
+          alt={`Pashuगृह पशु फोटो ${index + 1}`}
+          loading={index === 0 ? "eager" : "lazy"}
+          fetchPriority={index === 0 ? "high" : "auto"}
+          decoding="async"
+        />
         <img className="slide-watermark" src={initialContent.logo} alt="" aria-hidden="true" />
       </div>)}
       <div className="hero-content">
@@ -100,7 +110,7 @@ export function PashugrihSite({ initialContent }: { initialContent: SiteContent 
     {initialContent.supplementsEnabled && visibleSupplements.length > 0 && <section className="supplements-section" id="supplements">
       <div className="section-heading"><span className="section-kicker">भविष्य के पोषण उत्पाद</span><h2>पशु आहार सप्लीमेंट्स</h2><p>बेहतर स्वास्थ्य, दूध उत्पादन और पशुओं की दैनिक पोषण आवश्यकताओं के लिए उपयोगी सप्लीमेंट्स।</p></div>
       <div className="supplement-grid">{visibleSupplements.map((supplement) => <article className="supplement-card" key={supplement.id}>
-        <img src={supplement.imageUrl} alt={`${supplement.name} उत्पाद`} loading="lazy" />
+        <img src={optimizedImageUrl(supplement.imageUrl, { width: 720, quality: 68 })} srcSet={responsiveImageSrcSet(supplement.imageUrl, [360, 540, 720], 68)} sizes="(max-width: 720px) 100vw, 33vw" alt={`${supplement.name} उत्पाद`} loading="lazy" decoding="async" />
         <div className="supplement-body"><span className="supplement-category">{supplement.category}</span><h3>{supplement.name}</h3><p>{supplement.description}</p>
           <dl>{[["लाभ", supplement.benefits], ["उपयोग / मात्रा", supplement.dosage], ["उपयुक्त पशु", supplement.suitableFor], ["पैक आकार", supplement.packSize], ["कीमत", supplement.price]].filter((item) => item[1]).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
           {supplement.available ? <a className="whatsapp-button" href={whatsappHref(supplementMessage(supplement))} target="_blank" rel="noreferrer"><FaWhatsapp aria-hidden="true" />WhatsApp पर पूछें</a> : <div className="unavailable-message">फिलहाल उपलब्ध नहीं</div>}

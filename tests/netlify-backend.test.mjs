@@ -5,7 +5,7 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 
 test("uses Netlify Database, persistent public caching, Blobs and role-protected writes", async () => {
-  const [page, content, contentCache, contentRoute, uploadRoute, mediaRoute, auth, config] = await Promise.all([
+  const [page, content, contentCache, contentRoute, uploadRoute, mediaRoute, auth, config, editor, carousel, mediaUrl] = await Promise.all([
     readFile(new URL("app/page.tsx", root), "utf8"),
     readFile(new URL("lib/content.ts", root), "utf8"),
     readFile(new URL("lib/content-cache.ts", root), "utf8"),
@@ -14,6 +14,9 @@ test("uses Netlify Database, persistent public caching, Blobs and role-protected
     readFile(new URL("app/api/media/[...key]/route.ts", root), "utf8"),
     readFile(new URL("lib/auth.ts", root), "utf8"),
     readFile(new URL("netlify.toml", root), "utf8"),
+    readFile(new URL("app/admin/AdminEditor.tsx", root), "utf8"),
+    readFile(new URL("app/components/CattleMediaCarousel.tsx", root), "utf8"),
+    readFile(new URL("lib/media-url.ts", root), "utf8"),
   ]);
   assert.match(content, /drizzle-orm/);
   assert.match(content, /NETLIFY_DB_URL/);
@@ -33,10 +36,23 @@ test("uses Netlify Database, persistent public caching, Blobs and role-protected
   assert.match(uploadRoute, /8 \* 1024 \* 1024/);
   assert.match(uploadRoute, /40 \* 1024 \* 1024/);
   assert.match(uploadRoute, /video\/mp4/);
+  assert.match(uploadRoute, /crypto\.subtle\.digest\("SHA-256"/);
+  assert.doesNotMatch(uploadRoute, /crypto\.randomUUID/);
   assert.match(mediaRoute, /pashugrih-media/);
   assert.match(mediaRoute, /content-range/);
   assert.match(auth, /roles\?\.includes\("admin"\)/);
   assert.match(config, /pnpm run build/);
+  assert.match(config, /for = "\/assets\/\*"/);
+  assert.match(config, /for = "\/media\/\*"/);
+  assert.match(config, /max-age=31536000, immutable/);
+  assert.match(mediaUrl, /\/\.netlify\/images\?/);
+  assert.match(mediaUrl, /URLSearchParams/);
+  assert.match(carousel, /const activeItem = media\[safeActive\]/);
+  assert.doesNotMatch(carousel, /setInterval|preload="metadata"|\.play\(\)/);
+  assert.match(carousel, /preload="none"/);
+  assert.match(editor, /existingUrls\.has\(media\.url\)/);
+  assert.match(editor, /duplicate.*skipped/);
+  assert.match(editor, /preload="none"/);
 });
 
 test("public render has no polling or duplicate content request", async () => {
