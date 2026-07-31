@@ -20,11 +20,12 @@ export async function POST(request: Request) {
     const rule = allowedTypes[file.type];
     if (!rule) return Response.json({ error: "Use JPG, JPEG, PNG, WebP, MP4 or WebM media." }, { status: 400 });
     if (file.size > rule.maxSize) return Response.json({ error: rule.type === "video" ? "Video must be smaller than 40 MB." : "Image must be smaller than 8 MB." }, { status: 400 });
-    if (!await matchesFileSignature(file, file.type)) return Response.json({ error: "The file contents do not match the selected media type." }, { status: 400 });
-    const id = crypto.randomUUID();
+    const data = await file.arrayBuffer();
+    if (!matchesFileSignature(new Uint8Array(data, 0, Math.min(data.byteLength, 16)), file.type)) return Response.json({ error: "The file contents do not match the selected media type." }, { status: 400 });
+    const id = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", data)), (byte) => byte.toString(16).padStart(2, "0")).join("");
     const key = `site/${id}.${rule.extension}`;
     const store = getStore({ name: "pashugrih-media", consistency: "strong" });
-    await store.set(key, await file.arrayBuffer(), {
+    await store.set(key, data, {
       metadata: { contentType: file.type, originalName: file.name.slice(0, 180), mediaType: rule.type, uploadedBy: user.email ?? user.id, uploadedAt: new Date().toISOString() },
     });
     return Response.json({ id, url: `/api/media/${key}`, type: rule.type, mimeType: file.type }, { status: 201 });
@@ -33,8 +34,7 @@ export async function POST(request: Request) {
   }
 }
 
-async function matchesFileSignature(file: File, mimeType: string): Promise<boolean> {
-  const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+function matchesFileSignature(bytes: Uint8Array, mimeType: string): boolean {
   const ascii = String.fromCharCode(...bytes);
   if (mimeType === "image/png") return bytes.slice(0, 8).every((value, index) => value === [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a][index]);
   if (mimeType === "image/jpeg") return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import Link from "next/link";
 import { createBlankListing, isSupplementPublicReady, type BreedGroup, type CattleListing, type CattleMedia, type SiteContent, type Supplement } from "../../lib/content-model";
+import { optimizedImageUrl } from "../../lib/media-url";
 import { LogoutButton } from "./LogoutButton";
 
 type SingleImageTarget = { kind: "logo" } | { kind: "slide"; index: number } | { kind: "supplement"; id: string };
@@ -76,13 +77,20 @@ export function AdminEditor({ initialContent, userName }: { initialContent: Site
     if (!selected.length) return;
     setActiveUploads((count) => count + selected.length);
     let uploaded = 0;
+    let duplicates = 0;
+    const existingUrls = new Set(content.breeds.find((breed) => breed.id === breedId)?.listings.find((listing) => listing.id === listingId)?.media.map((item) => item.url) ?? []);
     for (const file of selected) {
       try {
         setMessage(`Uploading ${file.name}…`);
         const result = await uploadFile(file, setUploadProgress);
         const media: CattleMedia = { id: result.id, type: result.type, url: result.url, mimeType: result.mimeType, alt: "" };
-        updateBreed(breedId, (breed) => ({ ...breed, listings: breed.listings.map((listing) => listing.id === listingId ? { ...listing, media: [...listing.media, media] } : listing) }));
-        uploaded += 1;
+        if (existingUrls.has(media.url)) {
+          duplicates += 1;
+        } else {
+          existingUrls.add(media.url);
+          uploaded += 1;
+          updateBreed(breedId, (breed) => ({ ...breed, listings: breed.listings.map((listing) => listing.id === listingId ? { ...listing, media: [...listing.media, media] } : listing) }));
+        }
       } catch (cause) {
         setMessage(cause instanceof Error ? cause.message : `Could not upload ${file.name}.`);
       } finally {
@@ -90,7 +98,7 @@ export function AdminEditor({ initialContent, userName }: { initialContent: Site
       }
     }
     setUploadProgress(0);
-    if (uploaded) setMessage(`${uploaded} media file${uploaded === 1 ? "" : "s"} uploaded. Save & publish changes to attach them to this cattle listing.`);
+    if (uploaded || duplicates) setMessage(`${uploaded} media file${uploaded === 1 ? "" : "s"} uploaded${duplicates ? `; ${duplicates} duplicate${duplicates === 1 ? " was" : "s were"} skipped` : ""}. Save & publish changes to attach new media to this cattle listing.`);
   }
 
   function addListing(breedId: string) {
@@ -206,7 +214,7 @@ export function AdminEditor({ initialContent, userName }: { initialContent: Site
         {incompleteSupplements.length > 0 && <div className="validation-note">Activation requires name, description, price and image. Incomplete: {incompleteSupplements.map((item, index) => item.name || `Supplement ${index + 1}`).join(", ")}.</div>}
         <div className="supplement-admin-grid">{content.supplements.map((item, index) => <div className="supplement-editor" key={item.id}>
           <div className="breed-editor-head"><h3>{item.name || `Supplement ${index + 1}`}</h3><button type="button" className={`stock-toggle ${item.available ? "available" : "sold"}`} onClick={() => updateSupplement(item.id, "available", !item.available)}>{item.available ? "Available · Mark out of stock" : "Out of stock · Mark available"}</button></div>
-          <div className="supplement-preview">{item.imageUrl ? <img src={item.imageUrl} alt={`${item.name || "Supplement"} preview`} /> : <div><img src={content.logo} alt="" /><span>Temporary Admin placeholder</span></div>}</div>
+          <div className="supplement-preview">{item.imageUrl ? <img src={optimizedImageUrl(item.imageUrl, { width: 480, height: 360, fit: "cover", quality: 60 })} alt={`${item.name || "Supplement"} preview`} loading="lazy" decoding="async" /> : <div><img src={optimizedImageUrl(content.logo, { width: 160, quality: 70 })} alt="" /><span>Temporary Admin placeholder</span></div>}</div>
           <UploadControl label="Product image" preview={item.imageUrl} onChange={(event) => uploadSingleImage(event, { kind: "supplement", id: item.id })} />
           <div className="form-row"><Field id={`sup-name-${item.id}`} label="Supplement name" value={item.name} onChange={(value) => updateSupplement(item.id, "name", value)} /><Field id={`sup-category-${item.id}`} label="Category" value={item.category} onChange={(value) => updateSupplement(item.id, "category", value)} /></div>
           <Field id={`sup-description-${item.id}`} label="Hindi description" value={item.description} onChange={(value) => updateSupplement(item.id, "description", value)} multiline />
@@ -241,7 +249,7 @@ function ListingEditor({ breed, breeds, listing, onUpdate, onMove, onRemove, onM
     <div className="form-row"><Field id={`calving-${listing.id}`} label="Last-calving information" value={listing.lastCalving} onChange={(value) => onUpdate("lastCalving", value)} /><Field id={`age-${listing.id}`} label="Age" value={listing.age} onChange={(value) => onUpdate("age", value)} /></div>
     <div className="form-row"><Field id={`price-${listing.id}`} label="Price" value={listing.price} onChange={(value) => onUpdate("price", value)} /><div className="form-field checkbox-field"><label htmlFor={`show-price-${listing.id}`}>Public price visibility</label><label className="checkbox-control"><input id={`show-price-${listing.id}`} type="checkbox" checked={listing.showPricePublicly} onChange={(event) => onUpdate("showPricePublicly", event.target.checked)} />Show price publicly</label></div></div>
     <div className="media-admin"><div className="media-admin-head"><div><strong>Photos & videos</strong><span>JPG, JPEG, PNG, WebP, MP4 or WebM</span></div><label className="file-button">Upload media<input type="file" multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" onChange={(event) => { if (event.target.files) onUpload(event.target.files); event.target.value = ""; }} /></label></div>
-      {listing.media.length ? <div className="media-admin-grid">{listing.media.map((item, index) => <div className="media-admin-item" key={item.id}>{item.type === "video" ? <video src={item.url} muted playsInline controls preload="metadata" /> : <img src={item.url} alt={item.alt || `${listing.hindiName} preview`} />}<Field id={`alt-${item.id}`} label="Accessible label" value={item.alt} onChange={(value) => onMediaChange(listing.media.map((media) => media.id === item.id ? { ...media, alt: value } : media))} /><div className="media-item-actions"><button type="button" onClick={() => reorder(index, -1)} disabled={index === 0} aria-label="Move media earlier">←</button><button type="button" onClick={() => reorder(index, 1)} disabled={index === listing.media.length - 1} aria-label="Move media later">→</button><button type="button" className="danger-link" onClick={() => onMediaChange(listing.media.filter((media) => media.id !== item.id))}>Remove</button></div></div>)}</div> : <div className="empty-media-admin">No media uploaded. The public card will use a clean branded placeholder.</div>}
+      {listing.media.length ? <div className="media-admin-grid">{listing.media.map((item, index) => <div className="media-admin-item" key={item.id}>{item.type === "video" ? <video src={item.url} muted playsInline controls preload="none" /> : <img src={optimizedImageUrl(item.url, { width: 420, height: 315, fit: "cover", quality: 58 })} alt={item.alt || `${listing.hindiName} preview`} loading="lazy" decoding="async" />}<Field id={`alt-${item.id}`} label="Accessible label" value={item.alt} onChange={(value) => onMediaChange(listing.media.map((media) => media.id === item.id ? { ...media, alt: value } : media))} /><div className="media-item-actions"><button type="button" onClick={() => reorder(index, -1)} disabled={index === 0} aria-label="Move media earlier">←</button><button type="button" onClick={() => reorder(index, 1)} disabled={index === listing.media.length - 1} aria-label="Move media later">→</button><button type="button" className="danger-link" onClick={() => onMediaChange(listing.media.filter((media) => media.id !== item.id))}>Remove</button></div></div>)}</div> : <div className="empty-media-admin">No media uploaded. The public card will use a clean branded placeholder.</div>}
     </div>
   </article>;
 }
@@ -251,7 +259,7 @@ function Field({ id, label, value, onChange, multiline = false, type = "text", h
 }
 
 function UploadControl({ label, preview, logo = false, onChange }: { label: string; preview: string; logo?: boolean; onChange: (event: ChangeEvent<HTMLInputElement>) => void }) {
-  return <div className="upload-control">{preview ? <img className={`upload-preview ${logo ? "logo-preview" : ""}`} src={preview} alt={`${label} preview`} /> : <div className="upload-preview empty">No image</div>}<div className="upload-copy"><strong>{label}</strong><input type="file" accept="image/png,image/jpeg,image/webp" onChange={onChange} /><small>PNG, JPG or WebP · up to 8 MB</small></div></div>;
+  return <div className="upload-control">{preview ? <img className={`upload-preview ${logo ? "logo-preview" : ""}`} src={optimizedImageUrl(preview, { width: logo ? 180 : 420, height: logo ? undefined : 260, fit: logo ? "contain" : "cover", quality: 62 })} alt={`${label} preview`} loading="lazy" decoding="async" /> : <div className="upload-preview empty">No image</div>}<div className="upload-copy"><strong>{label}</strong><input type="file" accept="image/png,image/jpeg,image/webp" onChange={onChange} /><small>PNG, JPG or WebP · up to 8 MB</small></div></div>;
 }
 
 function uploadFile(file: File, onProgress: (progress: number) => void): Promise<UploadResult> {

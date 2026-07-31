@@ -1,6 +1,6 @@
 export const SITE_CONTENT_CACHE_TAG = "site-content";
 export const SITE_CONTENT_CACHE_KEY = ["pashugrih-site-content"];
-export const SITE_CONTENT_REVALIDATE_SECONDS = 60 * 60;
+export const SITE_CONTENT_REVALIDATE_SECONDS = false;
 
 type CacheOptions = { tags: string[]; revalidate: number | false };
 type CacheFactory = <T extends () => Promise<unknown>>(callback: T, keyParts?: string[], options?: CacheOptions) => T;

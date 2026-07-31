@@ -22,10 +22,15 @@ test("ships the breed-wise catalogue, exact inventory and contact controls", asy
   assert.match(content, /\+919942936647/);
   assert.match(site, /tel:\$\{initialContent\.clickToCall\}/);
   assert.match(site, /FaWhatsapp/);
-  assert.match(carousel, /3000/);
-  assert.match(carousel, /muted loop playsInline/);
-  assert.match(carousel, /video\.pause\(\)/);
+  assert.doesNotMatch(carousel, /setInterval|\.play\(\)|preload="metadata"/);
+  assert.match(carousel, /const activeItem = media\[safeActive\]/);
+  assert.match(carousel, /preload="none"/);
+  assert.match(carousel, /controls playsInline/);
+  assert.match(carousel, /optimizedImageUrl/);
+  assert.match(carousel, /responsiveImageSrcSet/);
   assert.match(carousel, /onTouchStart/);
+  assert.match(site, /4600/);
+  assert.match(site, /responsiveImageSrcSet\(slide/);
   assert.doesNotMatch(site, /fetch\(/);
   assert.doesNotMatch(carousel, /fetch\(/);
   assert.match(site, /अभी उपलब्ध नहीं/);

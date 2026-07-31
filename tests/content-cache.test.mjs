@@ -32,15 +32,19 @@ function fakeCacheController() {
   };
 }
 
-test("cold public load queries once and repeated loads reuse the cache", async () => {
+test("100 public loads perform one cold database read and exceed the 90% reduction target", async () => {
   let databaseReads = 0;
   const cache = fakeCacheController();
   const loadPublicContent = createPublicContentLoader(async () => ({ revision: ++databaseReads }), cache.factory);
 
-  assert.deepEqual(await loadPublicContent(), { revision: 1 });
-  assert.deepEqual(await loadPublicContent(), { revision: 1 });
-  assert.deepEqual(await loadPublicContent(), { revision: 1 });
+  const requestCount = 100;
+  for (let request = 0; request < requestCount; request += 1) {
+    assert.deepEqual(await loadPublicContent(), { revision: 1 });
+  }
   assert.equal(databaseReads, 1);
+  const reductionPercent = (1 - databaseReads / requestCount) * 100;
+  assert.ok(reductionPercent >= 90, `Expected at least 90% fewer reads, observed ${reductionPercent}%`);
+  assert.equal(reductionPercent, 99);
   assert.deepEqual(cache.configuration(), {
     keyParts: SITE_CONTENT_CACHE_KEY,
     options: { tags: [SITE_CONTENT_CACHE_TAG], revalidate: SITE_CONTENT_REVALIDATE_SECONDS },
